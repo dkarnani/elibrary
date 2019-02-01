@@ -42,9 +42,21 @@ app.get("/api/books", (req, res) => {
 //   )
 // })
 
+app.get("/api/report", (req, res) => {
+  return db.sequelize
+    .query("SELECT * FROM `TransReport1` ", {
+      type: db.sequelize.QueryTypes.SELECT
+    })
+    .then(report => res.send(report))
+    .catch(err => {
+      console.log("There was an error in Report Query", JSON.stringify(err));
+      return res.send(err);
+    });
+});
+
 app.post("/api/books", (req, res) => {
-  const { bookName, author, publisher } = req.body;
-  return db.Books.create({ bookName, author, publisher })
+  const { isbn, bookName, author, publisher } = req.body;
+  return db.Books.create({ isbn, bookName, author, publisher })
     .then(books => res.send(books))
     .catch(err => {
       console.log(
@@ -69,9 +81,9 @@ app.delete("/api/books/:id", (req, res) => {
 app.put("/api/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Books.findById(id).then(books => {
-    const { bookName, author, publisher } = req.body;
+    const { isbn, bookName, author, publisher } = req.body;
     return books
-      .update({ bookName, author, publisher })
+      .update({ isbn, bookName, author, publisher })
       .then(() => res.send(books))
       .catch(err => {
         console.log("***Error updating a book", JSON.stringify(err));

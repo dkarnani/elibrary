@@ -11,6 +11,7 @@
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "jqwidgets-scripts": "^7.0.0",
     "nodemon": "^1.18.9",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",

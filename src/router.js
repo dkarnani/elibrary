@@ -1,7 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
-import About from "./views/About.vue";
 import BooksMaintain from "./views/BooksMaintain.vue";
+import CheckOut from "./views/CheckOut.vue";
+import Report from "./views/Report.vue";
+
 Vue.use(Router);
 
 export default new Router({
@@ -12,9 +14,14 @@ export default new Router({
       component: BooksMaintain
     },
     {
-      path: "/about",
-      name: "about",
-      component: About
+      path: "/checkout",
+      name: "checkout",
+      component: CheckOut
+    },
+    {
+      path: "/report",
+      name: "report",
+      component: Report
     }
   ]
 });

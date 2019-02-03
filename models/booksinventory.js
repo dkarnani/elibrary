@@ -6,8 +6,8 @@ module.exports = (sequelize, DataTypes) => {
       isbn: DataTypes.INTEGER,
       bookCode: DataTypes.STRING,
       checkedOut: DataTypes.BOOLEAN,
-      checkedOutDate: DataTypes.DATE,
-      dueDate: DataTypes.DATE
+      checkedOutDate: DataTypes.DATEONLY,
+      dueDate: DataTypes.DATEONLY
     },
     {}
   );

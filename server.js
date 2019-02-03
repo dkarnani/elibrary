@@ -21,32 +21,62 @@ app.get("/api/books", (req, res) => {
   return db.Books.findAll()
     .then(Books => res.send(Books))
     .catch(err => {
-      console.log("There was an error querying contacts", JSON.stringify(err));
+      console.log("There was an error querying books", JSON.stringify(err));
       return res.send(err);
     });
 });
 
-// app.get('/api/myquery', (req, res) => {
-//   return (
-//     db.sequelize
-//       // .query('SELECT * FROM `Contacts` where firstName = "John"', { type: db.sequelize.QueryTypes.SELECT })
-//       .query('SELECT * FROM `Contacts` where firstName = "John"', {
-//         type: db.sequelize.QueryTypes.SELECT
-//       })
+app.get("/api/students", (req, res) => {
+  return db.Students.findAll()
+    .then(Students => res.send(Students))
+    .catch(err => {
+      console.log("There was an error querying students", JSON.stringify(err));
+      return res.send(err);
+    });
+});
 
-//       .then(contacts => res.send(contacts))
-//       .catch(err => {
-//         console.log('There was an error in myquery', JSON.stringify(err))
-//         return res.send(err)
-//       })
-//   )
-// })
+app.get("/api/transactions/:studentID", (req, res) => {
+  const studentID = parseInt(req.params.studentID);
+  return db.sequelize
+    .query(
+      "SELECT id, isbn, bookName, author, bookCode, checkedOutDate, dueDate, returnDate" +
+        " FROM TransReport1 where studentID = " +
+        studentID +
+        " and returnDate isnull",
+      {
+        type: db.sequelize.QueryTypes.SELECT
+      }
+    )
+    .then(contacts => res.send(contacts))
+    .catch(err => {
+      console.log(
+        "There was an error in Transactions Query",
+        JSON.stringify(err)
+      );
+      return res.send(err);
+    });
+});
 
 app.get("/api/report", (req, res) => {
   return db.sequelize
     .query("SELECT * FROM `TransReport1` ", {
       type: db.sequelize.QueryTypes.SELECT
     })
+    .then(report => res.send(report))
+    .catch(err => {
+      console.log("There was an error in Report Query", JSON.stringify(err));
+      return res.send(err);
+    });
+});
+
+app.get("/api/available", (req, res) => {
+  return db.sequelize
+    .query(
+      "SELECT isbn, bookName, author, publisher, availableQty, bookCode FROM BooksInStock",
+      {
+        type: db.sequelize.QueryTypes.SELECT
+      }
+    )
     .then(report => res.send(report))
     .catch(err => {
       console.log("There was an error in Report Query", JSON.stringify(err));
@@ -62,6 +92,25 @@ app.post("/api/books", (req, res) => {
       console.log(
         "***There was an error creating a book",
         JSON.stringify(books)
+      );
+      return res.status(400).send(err);
+    });
+});
+
+app.post("/api/transactions", (req, res) => {
+  const { studentID, isbn, bookCode, checkedOutDate, dueDate } = req.body;
+  return db.Transactions.create({
+    studentID,
+    isbn,
+    bookCode,
+    checkedOutDate,
+    dueDate
+  })
+    .then(transactions => res.send(transactions))
+    .catch(err => {
+      console.log(
+        "***There was an error creating a transaction",
+        JSON.stringify(transactions)
       );
       return res.status(400).send(err);
     });
@@ -87,6 +136,34 @@ app.put("/api/books/:id", (req, res) => {
       .then(() => res.send(books))
       .catch(err => {
         console.log("***Error updating a book", JSON.stringify(err));
+        res.status(400).send(err);
+      });
+  });
+});
+
+app.put("/api/transactions/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  return db.Transactions.findById(id).then(transactions => {
+    const {
+      studentID,
+      isbn,
+      bookCode,
+      checkedOutDate,
+      dueDate,
+      returnDate
+    } = req.body;
+    return transactions
+      .update({
+        studentID,
+        isbn,
+        bookCode,
+        checkedOutDate,
+        dueDate,
+        returnDate
+      })
+      .then(() => res.send(transactions))
+      .catch(err => {
+        console.log("***Error updating a transaction", JSON.stringify(err));
         res.status(400).send(err);
       });
   });

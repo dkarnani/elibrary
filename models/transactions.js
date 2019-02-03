@@ -6,9 +6,9 @@ module.exports = (sequelize, DataTypes) => {
       studentID: DataTypes.INTEGER,
       isbn: DataTypes.INTEGER,
       bookCode: DataTypes.STRING,
-      checkedOutDate: DataTypes.DATE,
-      dueDate: DataTypes.DATE,
-      returnDate: DataTypes.DATE
+      checkedOutDate: DataTypes.DATEONLY,
+      dueDate: DataTypes.DATEONLY,
+      returnDate: DataTypes.DATEONLY
     },
     {}
   );

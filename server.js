@@ -17,11 +17,42 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/"));
 
+// app.get("/api/books", (req, res) => {
+//   return db.Books.findAll()
+//     .then(Books => res.send(Books))
+//     .catch(err => {
+//       console.log("There was an error querying books", JSON.stringify(err));
+//       return res.send(err);
+//     });
+// });
+
 app.get("/api/books", (req, res) => {
-  return db.Books.findAll()
+  return db.sequelize
+    .query("SELECT * FROM BooksWithCount ", {
+      type: db.sequelize.QueryTypes.SELECT
+    })
     .then(Books => res.send(Books))
     .catch(err => {
       console.log("There was an error querying books", JSON.stringify(err));
+      return res.send(err);
+    });
+});
+
+app.get("/api/inventory/:isbn", (req, res) => {
+  const isbn = parseInt(req.params.isbn);
+  console.log("Checking Inventory for ISBN" + isbn);
+  return db.sequelize
+    .query(
+      "select id, isbn, bookCode, checkedOut, checkedOutDate, dueDate" +
+        " from BooksInventories where isbn = " +
+        isbn,
+      {
+        type: db.sequelize.QueryTypes.SELECT
+      }
+    )
+    .then(inventory => res.send(inventory))
+    .catch(err => {
+      console.log("There was an error in Inventory Query", JSON.stringify(err));
       return res.send(err);
     });
 });
@@ -47,7 +78,7 @@ app.get("/api/transactions/:studentID", (req, res) => {
         type: db.sequelize.QueryTypes.SELECT
       }
     )
-    .then(contacts => res.send(contacts))
+    .then(transactions => res.send(transactions))
     .catch(err => {
       console.log(
         "There was an error in Transactions Query",
@@ -116,6 +147,23 @@ app.post("/api/transactions", (req, res) => {
     });
 });
 
+app.post("/api/inventory", (req, res) => {
+  const { isbn, bookCode, checkedOut } = req.body;
+  return db.BooksInventory.create({
+    isbn,
+    bookCode,
+    checkedOut
+  })
+    .then(bookCodes => res.send(bookCodes))
+    .catch(err => {
+      console.log(
+        "***There was an error creating a Book Code",
+        JSON.stringify(bookCodes)
+      );
+      return res.status(400).send(err);
+    });
+});
+
 app.delete("/api/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Books.findById(id)
@@ -123,6 +171,17 @@ app.delete("/api/books/:id", (req, res) => {
     .then(() => res.send({ id }))
     .catch(err => {
       console.log("***Error deleting a book", JSON.stringify(err));
+      res.status(400).send(err);
+    });
+});
+
+app.delete("/api/inventory/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  return db.BooksInventory.findById(id)
+    .then(bookCodes => bookCodes.destroy())
+    .then(() => res.send({ id }))
+    .catch(err => {
+      console.log("***Error deleting a bookCode", JSON.stringify(err));
       res.status(400).send(err);
     });
 });

@@ -91,9 +91,9 @@
 import axios from "axios";
 export default {
   data: () => ({
-    studentsURL: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/students",
-    transactionsURL: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/transactions",
-    booksAvailableURL: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/available",
+    studentsURL: "https://elibrary.node-express.com/api/students",
+    transactionsURL: "https://elibrary.node-express.com/api/transactions",
+    booksAvailableURL: "https://elibrary.node-express.com/api/available",
     search: "",
     students: [],
     booksIssued: [],

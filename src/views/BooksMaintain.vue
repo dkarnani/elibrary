@@ -191,8 +191,8 @@ export default {
     dialog: false,
     codesDialog: false,
     addCodeDialog: false,
-    booksURL: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/books",
-    inventoryURL: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/inventory",
+    booksURL: "https://elibrary.node-express.com/api/books",
+    inventoryURL: "https://elibrary.node-express.com/api/inventory",
     headers: [
       { text: "ISBN", align: "center", value: "isbn" },
       { text: "Book Name", align: "center", value: "bookName" },

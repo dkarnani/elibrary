@@ -71,7 +71,7 @@ export default {
   },
   beforeCreate() {
     this.source = {
-      url: "http://ec2-34-218-228-201.us-west-2.compute.amazonaws.com:3000/api/report",
+      url: "https://elibrary.node-express.com/api/report",
       contenttype: "application/json",
       datatype: "json",
       datafields: [

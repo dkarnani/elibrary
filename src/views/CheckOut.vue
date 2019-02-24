@@ -91,9 +91,9 @@
 import axios from "axios";
 export default {
   data: () => ({
-    studentsURL: "https://elibrary.node-express.com/api/students",
-    transactionsURL: "https://elibrary.node-express.com/api/transactions",
-    booksAvailableURL: "https://elibrary.node-express.com/api/available",
+    studentsURL: process.env.VUE_APP_ROOT_API + "/api/students",
+    transactionsURL: process.env.VUE_APP_ROOT_API + "/api/transactions",
+    booksAvailableURL: process.env.VUE_APP_ROOT_API + "/api/available",
     search: "",
     students: [],
     booksIssued: [],

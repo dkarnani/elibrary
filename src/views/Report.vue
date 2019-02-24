@@ -71,7 +71,7 @@ export default {
   },
   beforeCreate() {
     this.source = {
-      url: "https://elibrary.node-express.com/api/report",
+      url: process.env.VUE_APP_ROOT_API + "/api/report",
       contenttype: "application/json",
       datatype: "json",
       datafields: [

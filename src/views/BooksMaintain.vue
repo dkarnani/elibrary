@@ -191,8 +191,8 @@ export default {
     dialog: false,
     codesDialog: false,
     addCodeDialog: false,
-    booksURL: "https://elibrary.node-express.com/api/books",
-    inventoryURL: "https://elibrary.node-express.com/api/inventory",
+    booksURL: process.env.VUE_APP_ROOT_API + "/api/books",
+    inventoryURL: process.env.VUE_APP_ROOT_API + "/api/inventory",
     headers: [
       { text: "ISBN", align: "center", value: "isbn" },
       { text: "Book Name", align: "center", value: "bookName" },

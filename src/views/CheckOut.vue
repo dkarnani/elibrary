@@ -119,7 +119,6 @@ export default {
 
   created() {
     this.initialize();
-    console.log(this.$route.params.studentID);
     if (this.$route.params.studentID != undefined) {
       this.selectedStudent.studentID = this.$route.params.studentID;
     } else {

@@ -4,6 +4,7 @@ import BooksMaintain from "./views/BooksMaintain.vue";
 import CheckOut from "./views/CheckOut.vue";
 import Report from "./views/Report.vue";
 import Home from "./views/Home.vue";
+import StudentsMaintain from "./views/StudentsMaintain.vue";
 
 Vue.use(Router);
 
@@ -18,6 +19,11 @@ export default new Router({
       path: "/books",
       name: "booksmaintain",
       component: BooksMaintain
+    },
+    {
+      path: "/students",
+      name: "studentsmaintain",
+      component: StudentsMaintain
     },
     {
       path: "/checkout",

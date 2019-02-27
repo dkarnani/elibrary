@@ -17,15 +17,6 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/"));
 
-// app.get("/api/books", (req, res) => {
-//   return db.Books.findAll()
-//     .then(Books => res.send(Books))
-//     .catch(err => {
-//       console.log("There was an error querying books", JSON.stringify(err));
-//       return res.send(err);
-//     });
-// });
-
 app.get("/api/books", (req, res) => {
   return db.sequelize
     .query("SELECT * FROM BooksWithCount ", {
@@ -58,8 +49,11 @@ app.get("/api/inventory/:isbn", (req, res) => {
 });
 
 app.get("/api/students", (req, res) => {
-  return db.Students.findAll()
-    .then(Students => res.send(Students))
+  return db.sequelize
+    .query("SELECT * FROM StudentsWithCount ", {
+      type: db.sequelize.QueryTypes.SELECT
+    })
+    .then(Books => res.send(Books))
     .catch(err => {
       console.log("There was an error querying students", JSON.stringify(err));
       return res.send(err);
@@ -128,6 +122,26 @@ app.post("/api/books", (req, res) => {
     });
 });
 
+app.post("/api/students", (req, res) => {
+  const { studentID, firstName, lastName, grade, phone, email } = req.body;
+  return db.Students.create({
+    studentID,
+    firstName,
+    lastName,
+    grade,
+    phone,
+    email
+  })
+    .then(students => res.send(students))
+    .catch(err => {
+      console.log(
+        "***There was an error creating a student",
+        JSON.stringify(students)
+      );
+      return res.status(400).send(err);
+    });
+});
+
 app.post("/api/transactions", (req, res) => {
   const { studentID, isbn, bookCode, checkedOutDate, dueDate } = req.body;
   return db.Transactions.create({
@@ -175,6 +189,17 @@ app.delete("/api/books/:id", (req, res) => {
     });
 });
 
+app.delete("/api/students/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  return db.Students.findById(id)
+    .then(students => students.destroy())
+    .then(() => res.send({ id }))
+    .catch(err => {
+      console.log("***Error deleting a student", JSON.stringify(err));
+      res.status(400).send(err);
+    });
+});
+
 app.delete("/api/inventory/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.BooksInventory.findById(id)
@@ -195,6 +220,20 @@ app.put("/api/books/:id", (req, res) => {
       .then(() => res.send(books))
       .catch(err => {
         console.log("***Error updating a book", JSON.stringify(err));
+        res.status(400).send(err);
+      });
+  });
+});
+
+app.put("/api/students/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  return db.Students.findById(id).then(students => {
+    const { studentID, firstName, lastName, grade, phone, email } = req.body;
+    return students
+      .update({ studentID, firstName, lastName, grade, phone, email })
+      .then(() => res.send(students))
+      .catch(err => {
+        console.log("***Error updating a student", JSON.stringify(err));
         res.status(400).send(err);
       });
   });

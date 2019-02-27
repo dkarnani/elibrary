@@ -137,7 +137,7 @@ export default {
     dialog: false,
     codesDialog: false,
     addCodeDialog: false,
-    studentsURL: "http://localhost:3000/api/students",
+    studentsURL: process.env.VUE_APP_ROOT_API + "/api/students",
     headers: [
       { text: "Student ID", align: "center", value: "studentID" },
       { text: "First Name", align: "center", value: "firstName" },

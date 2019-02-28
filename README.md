@@ -1,7 +1,7 @@
 # elibrary
 
 This application package has been developed by Divij Karnani, student of Troy High School, Fullerton, CA
-as a submission for FBLA 2019 competiton - Coding and Progamming event
+as a submission for FBLA 2019 competition - Coding and Programming event
 
 The application consists of 3 main components -
 
@@ -16,7 +16,7 @@ The application consists of 3 main components -
 3. Unzip the package into a folder called elibrary or clone from git repository https://github.com/dkarnani/elibrary.git
 4. Open a terminal window and run the following commands-
 5. cd elibrary
-6. npm install (This will install the required dependecies mentioned in package.json )
+6. npm install (This will install the required dependencies bbbbbmentioned in package.json )
 7. npm start dev - This will start the node server on http://localhost:3000
 8. npm run serve - This will launch the vue-cli application on port 8080
 9. The application can be opened in a browser using the URL - http://localhost:8080/elibrary

@@ -1,5 +1,8 @@
 <template>
   <div style="font-size: 13px; font-family: Verdana; float: left">
+    <h1>Books currently checked out</h1>
+    <p></p>
+    <p></p>
     <JqxGrid
       ref="myGrid"
       :theme="'material'"

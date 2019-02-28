@@ -1,5 +1,4 @@
 <template>
-  <!-- <div class="text-xs-center"> -->
   <div>
     <v-card>
       <v-card-title primary-title>
@@ -9,6 +8,7 @@
         <v-container fluid>
           <v-layout row wrap>
             <v-flex xs12>
+              <!-- Combo Box for Student Selection by ID or Name-->
               <v-combobox
                 v-bind:items="students"
                 v-model="selectedStudent"
@@ -30,6 +30,7 @@
                 </template>
               </v-combobox>
             </v-flex>
+            <!--Table containing all the books issued to the student-->
             <template v-if="selectedStudent !== null">
               <v-flex xs12 sm6>
                 <v-subheader v-text="'Books Issued'"></v-subheader>
@@ -43,11 +44,13 @@
                   <td class="text-xs-center">{{ props.item.checkedOutDate }}</td>
                   <td class="text-xs-center">{{ props.item.dueDate }}</td>
                   <td class="justify-center layout px-0">
+                    <!--Allow Return-->
                     <v-btn color="primary" @click="returnBook(props.item)">Return</v-btn>
                   </td>
                 </template>
               </v-data-table>
             </template>
+            <!--Search for books in inventory -->
             <template v-if="selectedStudent !== null">
               <v-flex xs12 sm8>
                 <v-spacer></v-spacer>
@@ -60,7 +63,7 @@
                   hide-details
                 ></v-text-field>
               </v-flex>
-
+              <!--Table containing all the books that can be borrowed-->
               <v-data-table
                 :headers="booksAvailableHeaders"
                 :items="booksAvailable"
@@ -149,35 +152,36 @@ export default {
       return axios
         .put(`${this.transactionsURL}/${transaction.id}`, transaction)
         .then(response => {
-          let copy = this.booksIssued.slice();
-          const idx = copy.findIndex(c => c.id === response.data.id);
-          copy.splice(idx, 1);
-          this.booksIssued = copy;
+          // Call Return API and refresh the 2 tables
+          axios.get(this.booksAvailableURL).then(response => {
+            this.booksAvailable = response.data;
+            axios
+              .get(this.transactionsURL + "/" + this.selectedStudent.studentID)
+              .then(response => {
+                this.booksIssued = response.data;
+              });
+          });
         });
     },
     checkoutBook(transaction) {
       var today = new Date();
       var dueDate = new Date();
+      // Default the due date to 30 days out in future
       dueDate.setDate(today.getDate() + 30);
       transaction.studentID = this.selectedStudent.studentID;
       transaction.checkedOutDate = today.toISOString().slice(0, 10);
       transaction.dueDate = dueDate.toISOString().slice(0, 10);
-      axios.post(this.transactionsURL, transaction); //adds new transaction into transaction table
-      axios.get(this.booksAvailableURL).then(response => {
-        this.booksAvailable = response.data;
+      // Call Checkout API and refresh the 2 tables
+      axios.post(this.transactionsURL, transaction).then(response => {
+        axios.get(this.booksAvailableURL).then(response => {
+          this.booksAvailable = response.data;
+          axios
+            .get(this.transactionsURL + "/" + this.selectedStudent.studentID)
+            .then(response => {
+              this.booksIssued = response.data;
+            });
+        });
       });
-
-      //.then(
-      //  axios.get(this.booksAvailableURL).then(response => {
-      //    this.booksAvailable = response.data;
-      //  })
-      //);
-      // return axios.post(this.transactionsURL, transaction).then(response => {
-      // let copy = this.booksAvailable.slice();
-      // const idx = copy.findIndex(c => c.id === response.data.id);
-      // copy.splice(idx, 1);
-      // this.booksAvailable = copy;
-      //});
     }
   }
 };

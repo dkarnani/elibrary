@@ -1,13 +1,13 @@
-<template>
-  <!-- <div class="text-xs-center"> -->
+// <template>
   <div>
     <v-card>
       <v-card-title primary-title>
-        <h1>e-Books</h1>
-
+        <h1>eBooks</h1>
         <v-spacer></v-spacer>
+        <!-- Search Input Box for Books-->
         <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
       </v-card-title>
+      <!-- Dialog Box to Add / Edit  Books -->
       <v-dialog v-model="dialog" width="500">
         <v-btn slot="activator" color="primary" class="text-xs-right">Add new Book</v-btn>
         <v-card>
@@ -15,35 +15,46 @@
             <span class="headline">{{ formTitle }}</span>
           </v-card-title>
           <v-card-text>
-            <v-container grid-list-md>
-              <v-layout align-center justify-center column fill-height>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field
-                    type="number"
-                    v-model="editedItem.isbn"
-                    :rules="isbnRules"
-                    label="ISBN"
-                    min="1"
-                    required
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field
-                    v-model="editedItem.bookName"
-                    :rules="bookNameRules"
-                    :counter="30"
-                    label="Book name"
-                    required
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.author" label="Author"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.publisher" label="Publisher"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-form ref="form">
+              <v-container grid-list-md>
+                <v-layout align-center justify-center column fill-height>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field
+                      type="number"
+                      v-model="editedItem.isbn"
+                      :rules="isbnRules"
+                      label="ISBN"
+                      min="1"
+                      required
+                      v-if="this.editedIndex === -1"
+                    ></v-text-field>
+                    <v-text-field
+                      type="number"
+                      v-model="editedItem.isbn"
+                      label="ISBN"
+                      min="1"
+                      disabled
+                      v-if="this.editedIndex != -1"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field
+                      v-model="editedItem.bookName"
+                      :rules="bookNameRules"
+                      :counter="30"
+                      label="Book name"
+                      required
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.author" label="Author"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.publisher" label="Publisher"></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-form>
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions>
@@ -53,6 +64,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <!-- Dialog Box to Edit Book Codes -->
       <v-dialog v-model="codesDialog" width="900">
         <v-card>
           <v-card-title>
@@ -80,15 +92,15 @@
               <br>
               <v-layout>
                 <v-flex md12>
-                  Total:
-                  Checked Out:
                   <div class="text-xs-right">
                     <v-btn color="primary" class="mr-0" @click="openAddCode()">Add new Code</v-btn>
                   </div>
                   <v-data-table :headers="bookCodesHeaders" :items="bookCodes" class="elevation-1">
                     <template slot="items" slot-scope="props">
                       <td class="text-xs-center">{{ props.item.bookCode }}</td>
-                      <td class="text-xs-center">{{ props.item.checkedOut }}</td>
+                      <td class="text-xs-center">{{ props.item.studentID }}</td>
+                      <td class="text-xs-center">{{ props.item.firstName }}</td>
+                      <td class="text-xs-center">{{ props.item.lastName }}</td>
                       <td class="text-xs-center">{{ props.item.checkedOutDate }}</td>
                       <td class="text-xs-center">{{ props.item.dueDate }}</td>
                       <td class="justify-center layout px-0">
@@ -111,6 +123,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <!-- Dialog Box to Add New Book Code -->
       <v-dialog v-model="addCodeDialog" width="300">
         <v-card>
           <v-card-title>
@@ -140,7 +153,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
+      <!--Table containing all the books -->
       <v-data-table :headers="headers" :items="books" :search="search" class="elevation-1">
         <template slot="items" slot-scope="props">
           <td class="text-xs-center">{{ props.item.isbn }}</td>
@@ -164,6 +177,7 @@
   </div>
 </template>
 
+<!-- Styles for the table-->
 <style>
 table {
   font-family: arial, sans-serif;
@@ -202,7 +216,9 @@ export default {
     ],
     bookCodesHeaders: [
       { text: "Book Code", align: "center", value: "bookCode" },
-      { text: "Checked Out", align: "center", value: "checkedOut" },
+      { text: "Student ID", align: "center", value: "studentID" },
+      { text: "First Name", align: "center", value: "firstName" },
+      { text: "Last Name", align: "center", value: "lastName" },
       { text: "Checked Out Date", align: "center", value: "checkedOutDate" },
       { text: "Due Date", align: "center", value: "dueDate" }
     ],
@@ -230,13 +246,10 @@ export default {
       publisher: "",
       count: 0
     },
+    // Input Validation Rules
     bookNameRules: [
       v => !!v || "Book Name is required",
       v => v.length <= 30 || "Book Name must be less than 30 characters"
-    ],
-    isbnRules: [
-      v => !!v || "ISBN is required",
-      v => v.length <= 10 || "Book Name must be less than 10 digits"
     ],
     bookCodeRules: [
       v => !!v || "Book Code is required",
@@ -247,10 +260,26 @@ export default {
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "New Book" : "Edit Book";
+    },
+    isbnRules() {
+      const rules = [];
+      var rule = v => !!v || "ISBN is required";
+      rules.push(rule);
+      rule = v => v.length <= 10 || "ISBN must be less than 10 digits";
+      rules.push(rule);
+      if (this.editedItem) {
+        rule = v =>
+          !this.books.some(function(el) {
+            return el.isbn == v;
+          }) || "ISBN already exists";
+        rules.push(rule);
+      }
+      return rules;
     }
   },
 
   watch: {
+    isbn: "validateField",
     dialog(val) {
       val || this.close();
     }
@@ -261,6 +290,7 @@ export default {
   },
 
   methods: {
+    // REST API calls to node.js server
     initialize() {
       axios.get(this.booksURL).then(response => {
         this.books = response.data;
@@ -285,7 +315,7 @@ export default {
     },
 
     deleteItem(item) {
-      confirm("Are you sure you want to delete this item?") &&
+      confirm("Are you sure you want to delete this eBook record?") &&
         this.deleteBook(item);
     },
 
@@ -298,10 +328,15 @@ export default {
     },
 
     save() {
-      this.onAddOrUpdateBook(this.editedItem);
-      this.close();
+      if (this.$refs.form.validate()) {
+        this.onAddOrUpdateBook(this.editedItem);
+        this.close();
+      }
     },
 
+    validateField() {
+      this.$refs.form.validate();
+    },
     closeCodes() {
       this.codesDialog = false;
       setTimeout(() => {
@@ -352,25 +387,18 @@ export default {
     },
     addBook(book) {
       return axios.post(this.booksURL, book).then(response => {
-        const copy = this.books.slice();
-        copy.push(response.data);
-        this.books = copy;
+        this.initialize();
       });
     },
+
     updateBook(book) {
       return axios.put(`${this.booksURL}/${book.id}`, book).then(response => {
-        const copy = this.books.slice();
-        const idx = copy.findIndex(c => c.id === response.data.id);
-        copy[idx] = response.data;
-        this.books = copy;
+        this.initialize();
       });
     },
     deleteBook(book) {
       return axios.delete(`${this.booksURL}/${book.id}`).then(response => {
-        let copy = this.books.slice();
-        const idx = copy.findIndex(c => c.id === response.data.id);
-        copy.splice(idx, 1);
-        this.books = copy;
+        this.initialize();
       });
     }
   }

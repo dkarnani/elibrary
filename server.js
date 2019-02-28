@@ -2,9 +2,9 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const db = require("./models"); // new require for db object
+const db = require("./models");
 const app = express();
-
+// CORS setup
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -16,6 +16,8 @@ app.use(function(req, res, next) {
 });
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/"));
+
+// Service to Get Books
 
 app.get("/api/books", (req, res) => {
   return db.sequelize
@@ -29,13 +31,14 @@ app.get("/api/books", (req, res) => {
     });
 });
 
+// Service to Get Inventory of a Book
 app.get("/api/inventory/:isbn", (req, res) => {
   const isbn = parseInt(req.params.isbn);
   console.log("Checking Inventory for ISBN" + isbn);
   return db.sequelize
     .query(
-      "select id, isbn, bookCode, checkedOut, checkedOutDate, dueDate" +
-        " from BooksInventories where isbn = " +
+      "select id, isbn, bookCode, studentID, firstName, lastName, checkedOutDate, dueDate" +
+        " from BookInventoryWithStudent where isbn = " +
         isbn,
       {
         type: db.sequelize.QueryTypes.SELECT
@@ -48,6 +51,7 @@ app.get("/api/inventory/:isbn", (req, res) => {
     });
 });
 
+// Service to Get Students
 app.get("/api/students", (req, res) => {
   return db.sequelize
     .query("SELECT * FROM StudentsWithCount ", {
@@ -60,6 +64,7 @@ app.get("/api/students", (req, res) => {
     });
 });
 
+// Service to Get Transactions by Student
 app.get("/api/transactions/:studentID", (req, res) => {
   const studentID = parseInt(req.params.studentID);
   return db.sequelize
@@ -82,6 +87,7 @@ app.get("/api/transactions/:studentID", (req, res) => {
     });
 });
 
+// Service to Get Report Data for Books Currently Issued
 app.get("/api/report", (req, res) => {
   return db.sequelize
     .query("SELECT * FROM `TransReport1` ", {
@@ -94,6 +100,7 @@ app.get("/api/report", (req, res) => {
     });
 });
 
+// Service to Get Books in Stock
 app.get("/api/available", (req, res) => {
   return db.sequelize
     .query(
@@ -109,6 +116,7 @@ app.get("/api/available", (req, res) => {
     });
 });
 
+// Service to Add New Books
 app.post("/api/books", (req, res) => {
   const { isbn, bookName, author, publisher } = req.body;
   return db.Books.create({ isbn, bookName, author, publisher })
@@ -122,6 +130,7 @@ app.post("/api/books", (req, res) => {
     });
 });
 
+// Service to Add New Students
 app.post("/api/students", (req, res) => {
   const { studentID, firstName, lastName, grade, phone, email } = req.body;
   return db.Students.create({
@@ -142,6 +151,7 @@ app.post("/api/students", (req, res) => {
     });
 });
 
+// Service to Checkout a Book
 app.post("/api/transactions", (req, res) => {
   const { studentID, isbn, bookCode, checkedOutDate, dueDate } = req.body;
   return db.Transactions.create({
@@ -161,6 +171,7 @@ app.post("/api/transactions", (req, res) => {
     });
 });
 
+// Service to Create a New Book Code
 app.post("/api/inventory", (req, res) => {
   const { isbn, bookCode, checkedOut } = req.body;
   return db.BooksInventory.create({
@@ -178,6 +189,7 @@ app.post("/api/inventory", (req, res) => {
     });
 });
 
+// Service to Delete a Book
 app.delete("/api/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Books.findById(id)
@@ -189,6 +201,7 @@ app.delete("/api/books/:id", (req, res) => {
     });
 });
 
+// Service to Delete a student
 app.delete("/api/students/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Students.findById(id)
@@ -200,6 +213,7 @@ app.delete("/api/students/:id", (req, res) => {
     });
 });
 
+// Service to Delete a BookCode
 app.delete("/api/inventory/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.BooksInventory.findById(id)
@@ -211,6 +225,7 @@ app.delete("/api/inventory/:id", (req, res) => {
     });
 });
 
+// Service to Update a Book
 app.put("/api/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Books.findById(id).then(books => {
@@ -225,6 +240,7 @@ app.put("/api/books/:id", (req, res) => {
   });
 });
 
+// Service to Update a Student
 app.put("/api/students/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Students.findById(id).then(students => {
@@ -239,6 +255,7 @@ app.put("/api/students/:id", (req, res) => {
   });
 });
 
+// Service to Return a Book
 app.put("/api/transactions/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Transactions.findById(id).then(transactions => {

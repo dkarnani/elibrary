@@ -26,7 +26,7 @@
       </v-navigation-drawer>
       <v-toolbar fixed app :clipped-left="clipped">
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-        <v-toolbar-title>e-Library</v-toolbar-title>
+        <v-toolbar-title>Troy's eLibrary</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <v-content>
@@ -68,7 +68,7 @@ export default {
     items: [
       {
         icon: "books",
-        title: "Maintain Books",
+        title: "Maintain eBooks",
         path: "/books"
       },
       {
@@ -82,8 +82,8 @@ export default {
         path: "/checkout"
       },
       {
-        icon: "report",
-        title: "Report",
+        icon: "printer",
+        title: "Books Issued Report",
         path: "/report"
       }
     ]

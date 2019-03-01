@@ -105,7 +105,7 @@
                       <td class="text-xs-center">{{ props.item.dueDate }}</td>
                       <td class="justify-center layout px-0">
                         <v-icon
-                          v-if="props.item.checkedOut === 0 || props.item.checkedOut === false"
+                          v-if="! props.item.studentID"
                           small
                           @click="deleteBookCode(props.item)"
                         >delete</v-icon>
@@ -130,20 +130,22 @@
             <span class="headline">New Book Code</span>
           </v-card-title>
           <v-card-text>
-            <v-container grid-list-md>
-              <v-layout align-center justify-center column fill-height>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field
-                    type="string"
-                    v-model="editedBookCode.bookCode"
-                    :rules="bookCodeRules"
-                    label="Book Code"
-                    min="1"
-                    required
-                  ></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-form ref="codeform">
+              <v-container grid-list-md>
+                <v-layout align-center justify-center column fill-height>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field
+                      type="string"
+                      v-model="editedBookCode.bookCode"
+                      :rules="bookCodeRules"
+                      label="Book Code"
+                      min="1"
+                      required
+                    ></v-text-field>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-form>
           </v-card-text>
           <v-divider></v-divider>
           <v-card-actions>
@@ -250,11 +252,12 @@ export default {
     bookNameRules: [
       v => !!v || "Book Name is required",
       v => v.length <= 30 || "Book Name must be less than 30 characters"
-    ],
-    bookCodeRules: [
-      v => !!v || "Book Code is required",
-      v => v.length <= 6 || "Book Code must be less than 6 digits"
     ]
+    // ,
+    // bookCodeRules: [
+    //   v => !!v || "Book Code is required",
+    //   v => v.length <= 6 || "Book Code must be less than 6 digits"
+    // ]
   }),
 
   computed: {
@@ -275,11 +278,26 @@ export default {
         rules.push(rule);
       }
       return rules;
+    },
+    bookCodeRules() {
+      const rules = [];
+      var rule = v => !!v || "Book Code is required";
+      rules.push(rule);
+      rule = v => v.length <= 6 || "Book Code must be less than 6 digits";
+      rules.push(rule);
+      rule = v =>
+        !this.bookCodes.some(function(el) {
+          return el.bookCode == v;
+        }) || "Book Code already exists";
+      rules.push(rule);
+
+      return rules;
     }
   },
 
   watch: {
     isbn: "validateField",
+    bookCode: "validateBookCodeField",
     dialog(val) {
       val || this.close();
     }
@@ -337,6 +355,9 @@ export default {
     validateField() {
       this.$refs.form.validate();
     },
+    validateBookCodeField() {
+      this.$refs.codeform.validate();
+    },
     closeCodes() {
       this.codesDialog = false;
       setTimeout(() => {
@@ -365,17 +386,19 @@ export default {
     },
 
     saveAddCode() {
-      this.editedBookCode.isbn = this.editedItem.isbn;
-      return axios
-        .post(this.inventoryURL, this.editedBookCode)
-        .then(response => {
-          // Change the value of checkedOut to 0 if false
-          response.data.checkedOut = response.data.checkedOut ? 1 : 0;
-          const copy = this.bookCodes.slice();
-          copy.push(response.data);
-          this.bookCodes = copy;
-          this.closeAddCode();
-        });
+      if (this.$refs.codeform.validate()) {
+        this.editedBookCode.isbn = this.editedItem.isbn;
+        return axios
+          .post(this.inventoryURL, this.editedBookCode)
+          .then(response => {
+            // Change the value of checkedOut to 0 if false
+            response.data.checkedOut = response.data.checkedOut ? 1 : 0;
+            const copy = this.bookCodes.slice();
+            copy.push(response.data);
+            this.bookCodes = copy;
+            this.closeAddCode();
+          });
+      }
     },
 
     onAddOrUpdateBook(book) {

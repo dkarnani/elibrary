@@ -2,7 +2,7 @@
   <div>
     <v-card>
       <v-card-title primary-title>
-        <h1>Checkout / Return {{$route.params.studentID }}</h1>
+        <h1>Checkout / Return</h1>
       </v-card-title>
       <v-card-text>
         <v-container fluid>
@@ -121,10 +121,11 @@ export default {
   }),
 
   created() {
-    this.initialize();
-    if (this.$route.params.studentID != undefined) {
-      this.selectedStudent.studentID = this.$route.params.studentID;
-    } else {
+    if (this.$route.params.navStudent != undefined) {
+      this.selectedStudent = this.$route.params.navStudent;
+      this.onStudentSelection();
+      this.initialize();
+    } else {  
       this.initialize();
     }
   },

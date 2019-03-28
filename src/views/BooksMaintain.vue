@@ -156,7 +156,7 @@
         </v-card>
       </v-dialog>
       <!--Table containing all the books -->
-      <v-data-table :headers="headers" :items="books" :search="search" class="elevation-1">
+      <v-data-table expand :headers="headers" :items="books" :search="search" class="elevation-1">
         <template slot="items" slot-scope="props">
           <td class="text-xs-center">{{ props.item.isbn }}</td>
           <td class="text-xs-center">{{ props.item.bookName }}</td>
@@ -166,17 +166,33 @@
           <td class="text-xs-center">
             <v-btn color="primary" @click="editCode(props.item)">Edit Codes</v-btn>
           </td>
-          <td class="justify-center layout px-0">
-            <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-            <v-icon v-if="props.item.count === 0" small @click="deleteItem(props.item)">delete</v-icon>
+          <td class="justify-center pa-2">
+            <v-tooltip top>
+              <v-icon small class="pa-2 mr-2" @click="editItem(props.item)" slot=activator>edit</v-icon>
+              <span>Edit book</span>
+            </v-tooltip>
+            <v-tooltip top>
+              <v-icon v-if="props.item.count === 0" small class="pa-2 mr-2" @click="deleteItem(props.item)" slot=activator>delete</v-icon>
+              <span>Delete book</span>
+            </v-tooltip>
+            
           </td>
         </template>
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Reset</v-btn>
         </template>
       </v-data-table>
+      
     </v-card>
+
+    <td class="right ma-2">
+      <v-tooltip max-width = 200 left close-delay=500>
+        <v-icon slot=activator>info</v-icon>
+        <span>This page is for renting out books. The user can view, edit, or remove from the collection of books and codes.</span> 
+      </v-tooltip>
+    </td>
   </div>
+  
 </template>
 
 <!-- Styles for the table-->

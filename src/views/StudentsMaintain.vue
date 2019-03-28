@@ -107,18 +107,41 @@
           <td class="text-xs-center">{{ props.item.phone }}</td>
           <td class="text-xs-center">{{ props.item.email }}</td>
           <td class="text-xs-center">{{ props.item.dueCount }}</td>
-          <td class="justify-center layout px-0">
-            <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-            <v-icon v-if="props.item.dueCount === 0" small @click="deleteItem(props.item)">delete</v-icon>
+
+          
+          <td width="3%" class="justify-center">
+
+            <v-tooltip top>
+              <v-icon  class="ma-9" v-if="props.item.dueCount === 0" small @click="deleteItem(props.item)" slot=activator>delete</v-icon>
+              <span>Delete student</span>
+            </v-tooltip>
+
+            <v-tooltip top>
+              <v-icon  small @click="editItem(props.item)" slot=activator>edit</v-icon>
+              <span>Edit student</span>
+            </v-tooltip>
+            
             <!--Allow navigation to Checkout page -->
-            <v-icon small @click="navigateItem(props.item)">shopping_cart</v-icon>
+            <v-tooltip top>
+              <v-icon small @click="navigateItem(props.item)" slot=activator>shopping_cart</v-icon>
+              <span>Checkout book</span>
+            </v-tooltip>
           </td>
+          
         </template>
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Reset</v-btn>
         </template>
       </v-data-table>
     </v-card>
+
+    <td class="right ma-2">
+      <v-tooltip max-width = 200 left close-delay=500>
+        <v-icon slot=activator>info</v-icon>
+        <span>This page is for maintaining the students. The user can view, edit, and remove the students' information, or can rent out a book for the student.</span> 
+      </v-tooltip>
+    </td> 
+
   </div>
 </template>
 
@@ -241,7 +264,7 @@ export default {
     },
 
     navigateItem(item) {
-      router.push({ name: "checkout", params: { studentID: item.studentID } });
+      router.push({ name: "checkout", params: { navStudent: item } });
     },
 
     deleteItem(item) {

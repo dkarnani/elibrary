@@ -82,7 +82,7 @@ export default {
         path: "/checkout"
       },
       {
-        icon: "printer",
+        icon: "tv",
         title: "Books Issued Report",
         path: "/report"
       }

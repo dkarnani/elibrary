@@ -263,7 +263,7 @@ export default {
       this.dialog = true;
     },
 
-    bbbbigateItem(item) {
+    navigateItem(item) {
       router.push({ name: "checkout", params: { navStudent: item } });
     },
 

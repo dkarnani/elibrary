@@ -38,12 +38,20 @@
               <v-data-table :headers="booksIssuedHeaders" :items="booksIssued" class="elevation-1">
                 <template slot="items" slot-scope="props">
                   <td class="text-xs-center">{{ props.item.isbn }}</td>
+                  <td class="text-xs-center">
+                    <img
+                      :src="props.item.imageLink"
+                      v-bind:alt="props.item"
+                      height="125px"
+                      width="95px"
+                    >
+                  </td>
                   <td class="text-xs-center">{{ props.item.bookName }}</td>
                   <td class="text-xs-center">{{ props.item.author }}</td>
                   <td class="text-xs-center">{{ props.item.bookCode }}</td>
                   <td class="text-xs-center">{{ props.item.checkedOutDate }}</td>
                   <td class="text-xs-center">{{ props.item.dueDate }}</td>
-                  <td class="justify-center layout px-0">
+                  <td class="text-xs-center">
                     <!--Allow Return-->
                     <v-btn color="primary" @click="returnBook(props.item)">Return</v-btn>
                   </td>
@@ -72,12 +80,20 @@
               >
                 <template slot="items" slot-scope="props">
                   <td class="text-xs-center">{{ props.item.isbn }}</td>
+                  <td class="text-xs-center">
+                    <img
+                      :src="props.item.imageLink"
+                      v-bind:alt="props.item"
+                      height="125px"
+                      width="95px"
+                    >
+                  </td>
                   <td class="text-xs-center">{{ props.item.bookName }}</td>
                   <td class="text-xs-center">{{ props.item.author }}</td>
                   <td class="text-xs-center">{{ props.item.publisher }}</td>
                   <td class="text-xs-center">{{ props.item.availableQty }}</td>
                   <td class="text-xs-center">{{ props.item.bookCode }}</td>
-                  <td class="justify-center layout px-0">
+                  <td class="text-xs-center">
                     <v-btn color="primary" @click="checkoutBook(props.item)">Checkout</v-btn>
                   </td>
                 </template>
@@ -104,6 +120,7 @@ export default {
     selectedStudent: null,
     booksIssuedHeaders: [
       { text: "ISBN", align: "center", value: "isbn" },
+      { text: "Image", align: "center", value: "imageLink" },
       { text: "Book Name", align: "center", value: "bookName" },
       { text: "Author", align: "center", value: "author" },
       { text: "Book Code", align: "center", value: "bookCode" },
@@ -112,6 +129,7 @@ export default {
     ],
     booksAvailableHeaders: [
       { text: "ISBN", align: "center", value: "isbn" },
+      { text: "Image", align: "center", value: "imageLink" },
       { text: "Book Name", align: "center", value: "bookName" },
       { text: "Author", align: "center", value: "author" },
       { text: "Publisher", align: "center", value: "publisher" },
@@ -125,7 +143,7 @@ export default {
       this.selectedStudent = this.$route.params.navStudent;
       this.onStudentSelection();
       this.initialize();
-    } else {  
+    } else {
       this.initialize();
     }
   },
@@ -144,6 +162,16 @@ export default {
             this.booksIssued = response.data;
           });
         axios.get(this.booksAvailableURL).then(response => {
+          this.booksAvailable = response.data;
+          // Remove Books Issued from the Books Available array
+          var i, j;
+          for (i = 0; i < this.booksAvailable.length; i++) {
+            for (j = 0; j < this.booksIssued.length; j++) {
+              if (this.booksAvailable[i].isbn == this.booksIssued[j].isbn) {
+                this.booksAvailable.splice(i, 1);
+              }
+            }
+          }
           this.booksAvailable = response.data;
         });
       }

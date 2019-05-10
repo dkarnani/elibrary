@@ -41,7 +41,7 @@
                     <v-text-field
                       v-model="editedItem.bookName"
                       :rules="bookNameRules"
-                      :counter="30"
+                      :counter="60"
                       label="Book name"
                       required
                     ></v-text-field>
@@ -51,6 +51,9 @@
                   </v-flex>
                   <v-flex xs12 sm6 md4>
                     <v-text-field v-model="editedItem.publisher" label="Publisher"></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6 md4>
+                    <v-text-field v-model="editedItem.imageLink" label="Image Link"></v-text-field>
                   </v-flex>
                 </v-layout>
               </v-container>
@@ -159,6 +162,9 @@
       <v-data-table expand :headers="headers" :items="books" :search="search" class="elevation-1">
         <template slot="items" slot-scope="props">
           <td class="text-xs-center">{{ props.item.isbn }}</td>
+          <td class="text-xs-center">
+            <img :src="getImgUrl(props.item)" v-bind:alt="props.item" height="250px" width="190px">
+          </td>
           <td class="text-xs-center">{{ props.item.bookName }}</td>
           <td class="text-xs-center">{{ props.item.author }}</td>
           <td class="text-xs-center">{{ props.item.publisher }}</td>
@@ -168,31 +174,34 @@
           </td>
           <td class="justify-center pa-2">
             <v-tooltip top>
-              <v-icon small class="pa-2 mr-2" @click="editItem(props.item)" slot=activator>edit</v-icon>
+              <v-icon small class="pa-2 mr-2" @click="editItem(props.item)" slot="activator">edit</v-icon>
               <span>Edit book</span>
             </v-tooltip>
             <v-tooltip top>
-              <v-icon v-if="props.item.count === 0" small class="pa-2 mr-2" @click="deleteItem(props.item)" slot=activator>delete</v-icon>
+              <v-icon
+                v-if="props.item.count === 0"
+                small
+                class="pa-2 mr-2"
+                @click="deleteItem(props.item)"
+                slot="activator"
+              >delete</v-icon>
               <span>Delete book</span>
             </v-tooltip>
-            
           </td>
         </template>
         <template slot="no-data">
           <v-btn color="primary" @click="initialize">Reset</v-btn>
         </template>
       </v-data-table>
-      
     </v-card>
 
     <td class="right ma-2">
-      <v-tooltip max-width = 200 left close-delay=500>
-        <v-icon slot=activator>info</v-icon>
-        <span>This page is for renting out books. The user can view, edit, or remove from the collection of books and codes.</span> 
+      <v-tooltip max-width="200" left close-delay="500">
+        <v-icon slot="activator">info</v-icon>
+        <span>This page is for renting out books. The user can view, edit, or remove from the collection of books and codes.</span>
       </v-tooltip>
     </td>
   </div>
-  
 </template>
 
 <!-- Styles for the table-->
@@ -227,6 +236,7 @@ export default {
     inventoryURL: process.env.VUE_APP_ROOT_API + "/api/inventory",
     headers: [
       { text: "ISBN", align: "center", value: "isbn" },
+      { text: "Image", align: "center", value: "imageLink" },
       { text: "Book Name", align: "center", value: "bookName" },
       { text: "Author", align: "center", value: "author" },
       { text: "Publisher", align: "center", value: "publisher" },
@@ -249,6 +259,7 @@ export default {
       bookName: "",
       author: "",
       publisher: "",
+      imageLink: "",
       count: 0
     },
     editedBookCode: {
@@ -262,12 +273,13 @@ export default {
       bookName: "",
       author: "",
       publisher: "",
+      imageLink: "",
       count: 0
     },
     // Input Validation Rules
     bookNameRules: [
       v => !!v || "Book Name is required",
-      v => v.length <= 30 || "Book Name must be less than 30 characters"
+      v => v.length <= 60 || "Book Name must be less than 60 characters"
     ]
     // ,
     // bookCodeRules: [
@@ -439,6 +451,9 @@ export default {
       return axios.delete(`${this.booksURL}/${book.id}`).then(response => {
         this.initialize();
       });
+    },
+    getImgUrl(book) {
+      return book.imageLink;
     }
   }
 };

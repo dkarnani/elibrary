@@ -1,9 +1,9 @@
 <template>
   <div style="font-size: 13px; font-family: Verdana; float: left">
-    <h1>Books Issued Report</h1>
+    <h1>Books Available in Inventory Report</h1>
     <p></p>
     <div>
-      <h2>Total books checked out: {{this.dataAdapter.totalrecords}}</h2>
+      <h2>Total books available: {{this.totalBookCount}}</h2>
     </div>
     <p></p>
     <JqxListBox
@@ -32,7 +32,7 @@
       :columnsresize="true"
       :pageable="true"
       :sorting="true"
-      :rendered="columnsBtnOnClick"
+      :rendered="removeFilter"
     ></JqxGrid>
 
     <div style="height: 60px; margin-top: 15px;">
@@ -57,7 +57,7 @@ import JqxButton from "jqwidgets-scripts/jqwidgets-vue/vue_jqxbuttons.vue";
 import JqxListBox from "jqwidgets-scripts/jqwidgets-vue/vue_jqxlistbox.vue";
 
 export default {
-  name: "Report",
+  name: "AvailableReport",
   components: {
     JqxGrid,
     JqxButton,
@@ -69,93 +69,63 @@ export default {
       displayListBox: false,
       columnsBtnTxt: "Display Columns",
       dataAdapter: new jqx.dataAdapter(this.source),
+      totalBookCount: 0,
       columns: [
-        {
-          text: "Student ID",
-          datafield: "studentID",
-          width: "10%",
-          sortable: true
-        },
-        {
-          text: "First Name",
-          datafield: "firstName",
-          width: "10%",
-          sortable: true
-        },
-        {
-          text: "Last Name",
-          datafield: "lastName",
-          width: "10%",
-          sortable: true
-        },
         { text: "ISBN", datafield: "isbn", width: "10%", sortable: true },
         {
           text: "Book Name",
           datafield: "bookName",
-          width: "15%",
+          width: "25%",
           sortable: true
         },
-        { text: "Author", datafield: "author", width: "10%", sortable: true },
+        { text: "Author", datafield: "author", width: "20%", sortable: true },
         {
-          text: "Book Code",
-          datafield: "bookCode",
-          width: "10%",
-          sortable: true
-        },
-        {
-          text: "Checked Out Date",
-          datafield: "checkedOutDate",
-          filtertype: "range",
-          cellsformat: "MM/dd/yy",
-          width: "10%",
+          text: "Publisher",
+          datafield: "publisher",
+          width: "20%",
           sortable: true
         },
         {
-          text: "Due Date",
-          datafield: "dueDate",
-          cellsformat: "MM/dd/yy",
+          text: "Available Qty",
+          datafield: "availableQty",
           width: "10%",
           sortable: true
         }
       ],
       listBoxSource: [
-        { label: "Student ID", value: "studentID", checked: true },
-        { label: "First Name", value: "firstName", checked: true },
-        { label: "Last Name", value: "lastName", checked: true },
         { label: "ISBN", value: "isbn", checked: true },
-        { label: "Author", value: "author", checked: true },
         { label: "Book Name", value: "bookName", checked: true },
-        { label: "Book Code", value: "bookCode", checked: true },
-        { label: "Checked Out Date", value: "checkedOutDate", checked: true },
-        { label: "Due Date", value: "dueDate", checked: true }
+        { label: "Author", value: "author", checked: true },
+        { label: "Publisher", value: "publisher", checked: true },
+        { label: "Available Qty", value: "availableQty", checked: true }
       ]
     };
   },
   beforeCreate() {
     this.source = {
-      url: process.env.VUE_APP_ROOT_API + "/api/report",
+      url: process.env.VUE_APP_ROOT_API + "/api/available",
       contenttype: "application/json",
       datatype: "json",
       datafields: [
-        { name: "studentID", type: "string" },
-        { name: "firstName", type: "string" },
-        { name: "lastName", type: "string" },
-        { name: "isbn", type: "number" },
+        { name: "isbn", type: "string" },
         { name: "bookName", type: "string" },
         { name: "author", type: "string" },
-        { name: "bookCode", type: "string" },
-        { name: "checkedOutDate", type: "date" },
-        { name: "dueDate", type: "date" },
-        { name: "returnDate", type: "date" }
+        { name: "publisher", type: "string" },
+        { name: "availableQty", type: "number" }
       ],
-      id: "id",
-      sortcolumn: "studentID",
+      id: "isbn",
+      sortcolumn: "isbn",
       sortdirection: "asc"
     };
   },
   methods: {
     removeFilter: function() {
       this.$refs.myGrid.clearfilters();
+      var i;
+      this.totalBookCount = 0;
+      for (i = 0; i < this.dataAdapter.loadedData.length; i++) {
+        this.totalBookCount += this.dataAdapter.loadedData[i].availableQty;
+      }
     },
     pdfBtnOnClick: function() {
       this.$refs.myGrid.exportdata("pdf", "jqxGrid");

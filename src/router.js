@@ -3,6 +3,7 @@ import Router from "vue-router";
 import BooksMaintain from "./views/BooksMaintain.vue";
 import CheckOut from "./views/CheckOut.vue";
 import Report from "./views/Report.vue";
+import AvailableReport from "./views/AvailableReport.vue";
 import Home from "./views/Home.vue";
 import StudentsMaintain from "./views/StudentsMaintain.vue";
 
@@ -34,6 +35,11 @@ export default new Router({
       path: "/report",
       name: "report",
       component: Report
+    },
+    {
+      path: "/availableReport",
+      name: "availableReport",
+      component: AvailableReport
     }
   ]
 });

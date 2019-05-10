@@ -69,7 +69,7 @@ app.get("/api/transactions/:studentID", (req, res) => {
   const studentID = parseInt(req.params.studentID);
   return db.sequelize
     .query(
-      "SELECT id, isbn, bookName, author, bookCode, checkedOutDate, dueDate, returnDate" +
+      "SELECT id, isbn, bookName, author, bookCode, checkedOutDate, dueDate, returnDate, imageLink" +
         " FROM TransReport1 where studentID = " +
         studentID +
         " and returnDate isnull",
@@ -104,7 +104,7 @@ app.get("/api/report", (req, res) => {
 app.get("/api/available", (req, res) => {
   return db.sequelize
     .query(
-      "SELECT isbn, bookName, author, publisher, availableQty, bookCode FROM BooksInStock",
+      "SELECT isbn, bookName, author, publisher, availableQty, bookCode, imageLink FROM BooksInStock",
       {
         type: db.sequelize.QueryTypes.SELECT
       }
@@ -118,8 +118,8 @@ app.get("/api/available", (req, res) => {
 
 // Service to Add New Books
 app.post("/api/books", (req, res) => {
-  const { isbn, bookName, author, publisher } = req.body;
-  return db.Books.create({ isbn, bookName, author, publisher })
+  const { isbn, bookName, author, publisher, imageLink } = req.body;
+  return db.Books.create({ isbn, bookName, author, publisher, imageLink })
     .then(books => res.send(books))
     .catch(err => {
       console.log(
@@ -229,9 +229,9 @@ app.delete("/api/inventory/:id", (req, res) => {
 app.put("/api/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   return db.Books.findById(id).then(books => {
-    const { isbn, bookName, author, publisher } = req.body;
+    const { isbn, bookName, author, publisher, imageLink } = req.body;
     return books
-      .update({ isbn, bookName, author, publisher })
+      .update({ isbn, bookName, author, publisher, imageLink })
       .then(() => res.send(books))
       .catch(err => {
         console.log("***Error updating a book", JSON.stringify(err));
